@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Studio – Clearly</title><link rel="stylesheet" href="style.css">
+<style>
+#canvas{cursor:default}
+.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}
+.pre{padding:5px 5px 7px;border-radius:14px;border:1px solid var(--edge);background:rgba(255,255,255,.06);color:var(--text);font:600 11px Inter,sans-serif;cursor:pointer;display:grid;gap:5px;justify-items:center;transition:.2s}
+.pre canvas{width:100%;height:auto;max-height:none;aspect-ratio:1;border-radius:9px;box-shadow:none;cursor:pointer}
+.pre:hover,.pre.on{border-color:var(--gold);transform:translateY(-2px)}
+.fld{width:100%;padding:9px 12px;border-radius:12px;border:1px solid var(--edge);background:rgba(255,255,255,.08);color:var(--text);font:500 13px Inter,sans-serif}
+input[type=color]{width:100%;height:34px;border:0;border-radius:10px;background:none;cursor:pointer;padding:0}
+</style></head>
+<body>
+<main>
+  <section class="hero" style="padding-bottom:0">
+    <h1 style="font-size:clamp(32px,6vw,54px)">The <span class="gold">Studio</span></h1>
+    <p class="lead">Upload a photo and make it shine.</p>
+  </section>
+
+  <section style="margin-top:28px">
+    <div class="glass stage">
+      <label id="drop" class="drop">
+        <input type="file" id="file" accept="image/*" hidden>
+        <div class="drop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16"/></svg></div>
+        <strong>Drop a photo here or click to upload</strong><small>PNG, JPG or WEBP</small>
+      </label>
+
+      <div id="editor" class="hidden">
+        <div class="canvas-wrap"><canvas id="canvas"></canvas></div>
+        <p class="hint">Pick a filter or move the sliders, then press Apply. Ctrl+Z undoes.</p>
+
+        <div class="groups">
+          <div class="glass grp"><h3>Filters</h3><div class="presets" id="presets"></div></div>
+
+          <div class="glass grp"><h3>Adjust</h3>
+            <label class="sl">Brightness <input type="range" id="brightness" min="50" max="150" value="100"></label>
+            <label class="sl">Contrast <input type="range" id="contrast" min="50" max="150" value="100"></label>
+            <label class="sl">Saturation <input type="range" id="saturate" min="0" max="200" value="100"></label>
+            <label class="sl">Warmth <input type="range" id="sepia" min="0" max="80" value="0"></label>
+            <label class="sl">Hue <input type="range" id="hue" min="-180" max="180" value="0"></label>
+            <label class="sl">Blur <input type="range" id="blur" min="0" max="6" step="0.5" value="0"></label>
+            <div class="row"><button id="apply" class="btn gold mini">Apply</button><button id="resetAdj" class="btn mini">Reset</button></div>
+          </div>
+
+          <div class="glass grp"><h3>Effects</h3>
+            <div class="row"><button id="auto" class="btn mini">Auto fix</button><button id="sharp" class="btn mini">Sharpen</button><button id="vig" class="btn mini">Vignette</button><button id="grain" class="btn mini">Film grain</button></div>
+          </div>
+
+          <div class="glass grp"><h3>Crop &amp; resize</h3>
+            <div class="row"><button class="btn mini" data-r="1:1">1:1</button><button class="btn mini" data-r="4:3">4:3</button><button class="btn mini" data-r="3:4">3:4</button><button class="btn mini" data-r="16:9">16:9</button><button class="btn mini" data-r="9:16">9:16</button></div>
+            <label class="sl">Width px <input type="number" id="rw" class="fld"></label>
+            <div class="row"><button id="resize" class="btn mini">Resize</button></div>
+          </div>
+
+          <div class="glass grp"><h3>Transform</h3>
+            <div class="row"><button id="rotl" class="btn mini">Rotate left</button><button id="rotr" class="btn mini">Rotate right</button><button id="flipx" class="btn mini">Flip horizontal</button><button id="flipy" class="btn mini">Flip vertical</button></div>
+          </div>
+
+          <div class="glass grp"><h3>Text</h3>
+            <input id="txt" class="fld" placeholder="Your text">
+            <label class="sl">Size <input type="range" id="tsize" min="3" max="20" value="8"></label>
+            <label class="sl">Color <input type="color" id="tcolor" value="#ffffff"></label>
+            <label class="sl">Position <select id="tpos"><option value="bottom">Bottom</option><option value="middle">Middle</option><option value="top">Top</option></select></label>
+            <div class="row"><button id="addtxt" class="btn gold mini">Add text</button></div>
+          </div>
+
+          <div class="glass grp"><h3>History &amp; export</h3>
+            <div class="row"><button id="undo" class="btn mini">Undo</button><button id="compare" class="btn mini">Hold to see original</button><button id="save" class="btn mini">Save to gallery</button><button id="newp" class="btn mini">New photo</button></div>
+            <div class="row"><select id="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WEBP</option></select><button id="download" class="btn gold mini">Download</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="script.js"></script>
+<script src="studio-tools.js"></script>
+<script src="site.js"></script>
+</body></html>

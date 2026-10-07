@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gallery – Clearly</title><link rel="stylesheet" href="style.css">
+<style>
+.thumb{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;margin-bottom:12px;background:#000}
+.thumb img,.thumb svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb .a{clip-path:inset(0 100% 0 0);transition:clip-path .7s}
+.card:hover .thumb .a{clip-path:inset(0)}
+.empty{grid-column:1/-1;text-align:center;padding:40px}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="scene" viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1b6e"/><stop offset=".6" stop-color="#d9548f"/><stop offset="1" stop-color="#ffcf7a"/></linearGradient></defs><rect width="400" height="225" fill="url(#sky)"/><circle cx="280" cy="120" r="34" fill="#ffe9a8"/><path d="M0 190l70-70 60 55 70-90 80 100 60-45 60 50v35H0z" fill="#2b1a55"/><path d="M0 205l90-50 80 40 90-45 140 55v20H0z" fill="#150c33"/></symbol></svg>
+<main>
+  <section class="hero" style="padding-bottom:0">
+    <h1 style="font-size:clamp(32px,6vw,54px)">The <span class="gold">Gallery</span></h1>
+    <p class="lead">Your saved works, and a showcase of what is possible.</p>
+  </section>
+  <section><div class="sec"><h2>Your works</h2></div><div class="grid" id="mine"></div></section>
+  <section>
+    <div class="sec"><h2>Showcase</h2><div class="cta" id="chips"></div></div>
+    <div class="grid" id="show"></div>
+  </section>
+</main>
+<script>
+  const WK = "clearly.works";
+  const W = JSON.parse(localStorage.getItem(WK) || "[]");
+  const mine = document.getElementById("mine");
+  mine.innerHTML = W.length
+    ? W.map((w, i) => `<div class="glass card"><div class="thumb"><img src="${w.src}" alt=""></div><h3>${w.name}</h3><div class="row" style="margin-top:10px"><a class="btn mini gold" download="${w.name}.jpg" href="${w.src}">Download</a><button class="btn mini" data-del="${i}">Delete</button></div></div>`).join("")
+    : `<div class="glass empty"><h3>No works yet</h3><p class="lead" style="margin:10px auto 18px">Edit a photo in the Studio and press “Save to gallery”.</p><a class="btn gold" href="studio.html">Open the Studio</a></div>`;
+  mine.onclick = (e) => {
+    const i = e.target.dataset.del;
+    if (i !== undefined) { W.splice(i, 1); localStorage.setItem(WK, JSON.stringify(W)); location.reload(); }
+  };
+
+  const S = [["Beach cleanup","Removal",20],["Sunset boost","Enhance",0],["Warm tones","Color",340],["Crowd-free street","Removal",200],["Crisp detail","Enhance",260],["Moody fade","Color",120]];
+  const show = document.getElementById("show");
+  show.innerHTML = S.map((s, i) => `<div class="glass card" data-c="${s[1]}" style="--d:${i * 0.06}s"><div class="thumb">
+    <svg class="b" style="filter:hue-rotate(${s[2]}deg) blur(3px) grayscale(.7) brightness(.7)"><use href="#scene" width="100%" height="100%"/></svg>
+    <svg class="a" style="filter:hue-rotate(${s[2]}deg)"><use href="#scene" width="100%" height="100%"/></svg></div>
+    <span class="tag live">${s[1]}</span><h3>${s[0]}</h3><p>Hover to reveal the result.</p></div>`).join("");
+
+  const chips = document.getElementById("chips");
+  chips.innerHTML = ["All", "Removal", "Enhance", "Color"].map((c, i) => `<button class="btn mini chip ${i ? "" : "on"}" data-f="${c}">${c}</button>`).join("");
+  chips.onclick = (e) => {
+    const f = e.target.dataset.f;
+    if (!f) return;
+    chips.querySelectorAll(".chip").forEach((b) => b.classList.toggle("on", b === e.target));
+    show.querySelectorAll(".card").forEach((c) => (c.style.display = f === "All" || c.dataset.c === f ? "" : "none"));
+  };
+</script>
+<script src="site.js"></script>
+</body></html>

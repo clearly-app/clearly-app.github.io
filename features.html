@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Features – Clearly</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<main>
+  <section class="hero" style="padding-bottom:0">
+    <h1 style="font-size:clamp(32px,6vw,54px)">Every <span class="gold">feature</span>, in detail</h1>
+    <p class="lead">Everything you can do in the Studio.</p>
+  </section>
+  <section><div class="grid" id="g"></div></section>
+  <section class="cta"><a class="btn gold" href="studio.html">Try them in the Studio</a></section>
+</main>
+<script>
+  const F = [
+    ["Pro filters", "Ten looks with live thumbnails: Vivid, Noir, Cinema and more."],
+    ["Fine adjustments", "Brightness, contrast, saturation, warmth, hue and blur with a live preview."],
+    ["Auto fix", "One click to balance the light and bring back contrast."],
+    ["Effects", "Sharpen, vignette and film grain."],
+    ["Crop and resize", "Social-ready ratios and exact width."],
+    ["Rotate and flip", "Turn or mirror in any direction."],
+    ["Add text", "Captions with your size, color and position."],
+    ["Undo and compare", "Step back any time, hold to see the original."],
+    ["Export your way", "Download as PNG, JPG or WEBP."],
+    ["Your gallery", "Save your best edits and come back to them."]
+  ];
+  document.getElementById("g").innerHTML = F.map((f, i) =>
+    `<div class="glass card" style="--d:${i * 0.05}s"><span class="tag live">Live</span><span class="num">${String(i + 1).padStart(2, "0")}</span><h3>${f[0]}</h3><p>${f[1]}</p></div>`
+  ).join("");
+</script>
+<script src="site.js"></script>
+</body></html>

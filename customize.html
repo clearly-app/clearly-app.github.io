@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Customize – Clearly</title><link rel="stylesheet" href="style.css">
+<style>
+input[type=color]{width:100%;height:34px;border:0;border-radius:10px;background:none;cursor:pointer;padding:0}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold)}
+textarea{width:100%;height:110px;border-radius:14px;border:1px solid var(--edge);background:rgba(255,255,255,.06);color:var(--text);padding:10px;font:12px Consolas,monospace}
+.sw{width:14px;height:14px;border-radius:50%}
+</style></head>
+<body>
+<main>
+  <section class="hero" style="padding-bottom:0">
+    <h1 style="font-size:clamp(32px,6vw,54px)">Make it <span class="gold">yours</span></h1>
+    <p class="lead">Every change applies instantly to the whole site and is saved in your browser.</p>
+  </section>
+
+  <section style="margin-top:32px"><div class="groups">
+    <div class="glass grp"><h3>Mode</h3>
+      <div class="row"><button class="btn mini" data-mode="dark">Dark</button><button class="btn mini" data-mode="light">Light</button><button class="btn mini" data-mode="auto">Match my device</button></div>
+    </div>
+
+    <div class="glass grp"><h3>Ready palettes</h3><div class="row" id="pal"></div></div>
+
+    <div class="glass grp"><h3>Colors</h3>
+      <label class="sl">Accent <input type="color" data-k="gold"></label>
+      <label class="sl">Accent 2 <input type="color" data-k="gold2"></label>
+      <label class="sl">Primary <input type="color" data-k="royal"></label>
+      <label class="sl">Secondary <input type="color" data-k="royal2"></label>
+      <label class="sl">Background <input type="color" data-k="bg"></label>
+      <label class="sl">Text <input type="color" data-k="text"></label>
+    </div>
+
+    <div class="glass grp"><h3>Glass &amp; shape</h3>
+      <label class="sl">Blur <input type="range" data-k="blur" min="0" max="40"></label>
+      <label class="sl">Corners <input type="range" data-k="radius" min="0" max="40"></label>
+      <label class="sl">Buttons <select data-k="btnr"><option value="999">Pill</option><option value="14">Rounded</option><option value="4">Square</option></select></label>
+    </div>
+
+    <div class="glass grp"><h3>Typography</h3>
+      <label class="sl">Headings <select data-k="font"><option value="serif">Elegant serif</option><option value="sans">Clean sans</option><option value="mono">Code mono</option></select></label>
+    </div>
+
+    <div class="glass grp"><h3>Effects</h3>
+      <label class="sl">Glow orbs <input type="checkbox" data-k="orbs"></label>
+      <label class="sl">Cursor glow <input type="checkbox" data-k="glow"></label>
+      <label class="sl">Animations <input type="checkbox" data-k="motion"></label>
+    </div>
+
+    <div class="glass grp"><h3>Backup &amp; reset</h3>
+      <textarea id="box" spellcheck="false"></textarea>
+      <div class="row"><button class="btn mini gold" id="copy">Copy</button><button class="btn mini" id="apply">Apply pasted</button><button class="btn mini" id="reset">Reset all</button></div>
+    </div>
+  </div></section>
+</main>
+<script src="site.js"></script>
+<script>
+  const get = () => { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } };
+  const box = document.getElementById("box");
+  const DEFV = { blur: 24, radius: 26, btnr: 999, font: "serif" };
+  const NUM = ["blur", "radius", "btnr"];
+
+  function sync() {
+    const s = get(), cs = getComputedStyle(document.documentElement);
+    document.querySelectorAll("[data-k]").forEach((el) => {
+      const k = el.dataset.k;
+      if (el.type === "checkbox") el.checked = s[k] !== false;
+      else if (el.type === "color") el.value = cs.getPropertyValue("--" + k).trim();
+      else el.value = s[k] ?? DEFV[k];
+    });
+    box.value = JSON.stringify(s, null, 1);
+  }
+  function save(s) { localStorage.setItem(KEY, JSON.stringify(s)); applyTheme(); label(); sync(); }
+
+  document.querySelectorAll("[data-k]").forEach((el) => el.addEventListener("input", () => {
+    const k = el.dataset.k;
+    const v = el.type === "checkbox" ? el.checked : NUM.includes(k) ? +el.value : el.value;
+    localStorage.setItem(KEY, JSON.stringify({ ...get(), [k]: v }));
+    applyTheme();
+    box.value = JSON.stringify(get(), null, 1);
+  }));
+  document.querySelectorAll("[data-mode]").forEach((b) => (b.onclick = () => save({ ...get(), mode: b.dataset.mode })));
+
+  const PAL = {
+    Royal: null,
+    Emerald: ["#5eead4", "#0d9488", "#10b981", "#047857"],
+    Rose: ["#fda4af", "#e11d48", "#ec4899", "#9d174d"],
+    Ocean: ["#7dd3fc", "#0284c7", "#3b82f6", "#1e3a8a"],
+    Sunset: ["#fdba74", "#ea580c", "#f43f5e", "#9a3412"],
+    Mono: ["#e5e7eb", "#9ca3af", "#6b7280", "#374151"],
+  };
+  const pal = document.getElementById("pal");
+  pal.innerHTML = Object.entries(PAL).map(([n, c]) =>
+    `<button class="btn mini" data-pal="${n}"><i class="sw" style="background:linear-gradient(135deg,${c ? c[0] : "#e8c96d"},${c ? c[2] : "#7c4dff"})"></i>${n}</button>`).join("")
+    + '<button class="btn mini" id="rnd">Surprise me</button>';
+  const hex = (h, s, l) => {
+    h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n) => { const k = (n + h / 30) % 12; return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))).toString(16).padStart(2, "0"); };
+    return "#" + f(0) + f(8) + f(4);
+  };
+  pal.onclick = (e) => {
+    const b = e.target.closest("[data-pal]"), s = get();
+    if (b) {
+      const c = PAL[b.dataset.pal];
+      ["gold", "gold2", "royal", "royal2"].forEach((k, i) => (c ? (s[k] = c[i]) : delete s[k]));
+      save(s);
+    }
+    if (e.target.id === "rnd") {
+      const h = Math.random() * 360;
+      save({ ...s, gold: hex(h, 85, 70), gold2: hex(h, 75, 40), royal: hex(h + 45, 85, 62), royal2: hex(h + 80, 70, 40) });
+    }
+  };
+
+  document.getElementById("copy").onclick = () => navigator.clipboard.writeText(box.value);
+  document.getElementById("apply").onclick = () => { try { save(JSON.parse(box.value)); } catch (e) { alert("That is not valid settings text."); } };
+  document.getElementById("reset").onclick = () => { localStorage.removeItem(KEY); applyTheme(); label(); sync(); };
+  sync();
+</script>
+</body></html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Clearly – Royal Photo Studio</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<main>
+  <section class="hero">
+    <span class="eyebrow">Royal-grade photo studio</span>
+    <h1>Photos fit for <span class="gold">royalty</span></h1>
+    <p class="lead">Filters, color, crop and text. Polish every detail and finish with a touch of gold. Free, right in your browser.</p>
+    <div class="cta"><a class="btn gold" href="studio.html">Enter the Studio</a><a class="btn" href="features.html">Explore features</a></div>
+  </section>
+
+  <section style="margin-top:44px">
+    <svg width="0" height="0" style="position:absolute"><symbol id="scene" viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1b6e"/><stop offset=".6" stop-color="#d9548f"/><stop offset="1" stop-color="#ffcf7a"/></linearGradient></defs><rect width="400" height="225" fill="url(#sky)"/><circle cx="280" cy="120" r="34" fill="#ffe9a8"/><path d="M0 190l70-70 60 55 70-90 80 100 60-45 60 50v35H0z" fill="#2b1a55"/><path d="M0 205l90-50 80 40 90-45 140 55v20H0z" fill="#150c33"/></symbol></svg>
+    <div class="glass ba" id="ba" style="--d:.3s">
+      <svg class="sc"><use href="#scene" width="100%" height="100%"/></svg>
+      <div class="clip"><svg class="sc"><use href="#scene" width="100%" height="100%"/></svg></div>
+      <span class="lab l">Before</span><span class="lab r">After</span>
+      <div class="bar"></div>
+      <input type="range" min="0" max="100" value="50" aria-label="Before and after">
+    </div>
+    <p class="hint">Drag across the image to compare</p>
+  </section>
+
+  <section>
+    <div class="sec"><h2>Everything a <span class="gold">crown jewel</span> needs</h2><p class="lead">Powerful tools, simple controls.</p></div>
+    <div class="grid">
+      <a class="glass card" href="features.html"><span class="num">01</span><h3>Pro filters</h3><p>Cinematic looks with a live preview.</p></a>
+      <a class="glass card" href="features.html"><span class="num">02</span><h3>Color &amp; style</h3><p>Fine-tune light and color, or pick a ready-made look.</p></a>
+      <a class="glass card" href="features.html"><span class="num">03</span><h3>Your way out</h3><p>Undo anything, compare with the original, export in any format.</p></a>
+    </div>
+  </section>
+
+  <section class="glass band">
+    <h2>Ready for the <span class="gold">royal treatment?</span></h2>
+    <p class="lead">No sign-up. No watermark. Just drop a photo.</p>
+    <div class="cta"><a class="btn gold" href="studio.html">Open the Studio</a><a class="btn" href="about.html">How it works</a></div>
+  </section>
+</main>
+<script>
+  const ba = document.getElementById("ba");
+  ba.querySelector("input").addEventListener("input", (e) => ba.style.setProperty("--p", e.target.value + "%"));
+</script>
+<script src="site.js"></script>
+</body></html>
