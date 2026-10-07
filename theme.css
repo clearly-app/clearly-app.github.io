@@ -44,3 +44,31 @@ html.lg[data-theme=light] .glass{background:rgba(255,255,255,.2);box-shadow:0 20
 .btn:active{transform:scale(.93,.88)}
 .card,.grp{transition:transform .25s,box-shadow .25s,border-radius .7s cubic-bezier(.34,1.56,.64,1)}
 .card:hover,.grp:hover{border-radius:calc(var(--radius)*1.4) calc(var(--radius)*.8) calc(var(--radius)*1.3) calc(var(--radius)*.9)}
+
+/* ===== Mobile performance (touch devices / small screens) ===== */
+@media (hover:none), (max-width:900px){
+  /* الدوائر الملونة: تدرج ثابت بدل blur(95px) المتحرك */
+  .orb{filter:none;animation:none;opacity:.4;background-color:transparent}
+  .o1{background-image:radial-gradient(circle,var(--royal),transparent 68%)}
+  .o2{background-image:radial-gradient(circle,var(--royal2),transparent 68%)}
+  .o3{background-image:radial-gradient(circle,var(--gold2),transparent 68%)}
+  .cursor-glow{display:none}
+
+  /* الزجاج: blur أخف + شيل فلتر SVG التقيل */
+  .glass,
+  html.lg .glass{
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.25);
+  }
+
+  /* الأنيميشن اللانهائية */
+  .gold{animation:none;background-position:50% center}
+  .eyebrow::before{animation:none}
+  .glass{animation-duration:.5s}
+
+  /* الكروت من غير 3D */
+  .card{transform:none;transition:box-shadow .25s}
+  .card:hover,.grp:hover{border-radius:var(--radius)}
+  .glass::after{display:none}
+}
