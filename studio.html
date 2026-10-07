@@ -8,6 +8,8 @@
 .pre:hover,.pre.on{border-color:var(--gold);transform:translateY(-2px)}
 .fld{width:100%;padding:9px 12px;border-radius:12px;border:1px solid var(--edge);background:rgba(255,255,255,.08);color:var(--text);font:500 13px Inter,sans-serif}
 input[type=color]{width:100%;height:34px;border:0;border-radius:10px;background:none;cursor:pointer;padding:0}
+#split{margin-top:14px}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
 </style></head>
 <body>
 <main>
@@ -26,9 +28,15 @@ input[type=color]{width:100%;height:34px;border:0;border-radius:10px;background:
 
       <div id="editor" class="hidden">
         <div class="canvas-wrap"><canvas id="canvas"></canvas></div>
-        <p class="hint">Pick a filter or move the sliders, then press Apply. Ctrl+Z undoes.</p>
+        <input type="range" id="split" class="hidden" min="0" max="100" value="50" aria-label="Before and after">
+        <p class="hint">Pick a filter or move the sliders, then press Apply. Ctrl+Z undoes, Ctrl+Y redoes.</p>
 
         <div class="groups">
+          <div class="glass grp"><h3>Royal Touch</h3>
+            <p class="note">One click: auto light, richer color and a golden glow.</p>
+            <div class="row"><button id="royal" class="btn gold mini">Apply Royal Touch</button><button id="split-toggle" class="btn mini">Before / After</button></div>
+          </div>
+
           <div class="glass grp"><h3>Filters</h3><div class="presets" id="presets"></div></div>
 
           <div class="glass grp"><h3>Adjust</h3>
@@ -64,7 +72,7 @@ input[type=color]{width:100%;height:34px;border:0;border-radius:10px;background:
           </div>
 
           <div class="glass grp"><h3>History &amp; export</h3>
-            <div class="row"><button id="undo" class="btn mini">Undo</button><button id="compare" class="btn mini">Hold to see original</button><button id="save" class="btn mini">Save to gallery</button><button id="newp" class="btn mini">New photo</button></div>
+            <div class="row"><button id="undo" class="btn mini">Undo</button><button id="redo" class="btn mini">Redo</button><button id="compare" class="btn mini">Hold to see original</button><button id="save" class="btn mini">Save to gallery</button><button id="newp" class="btn mini">New photo</button></div>
             <div class="row"><select id="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WEBP</option></select><button id="download" class="btn gold mini">Download</button></div>
           </div>
         </div>

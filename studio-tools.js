@@ -1,15 +1,24 @@
 const $ = (id) => document.getElementById(id);
 const HIST = [];
+const REDO = [];
 let ORIG = null;
+let ORIGIMG = null;
 const rawSet = window.setImage;
 
-// history for Undo + remember the first image
-window.setImage = function (src) {
-  if (img) { HIST.push(img.src); if (HIST.length > 12) HIST.shift(); }
-  if (!ORIG) ORIG = src;
-  rawSet(src);
+// history for Undo/Redo + remember the first image
+window.setImage = function (src, scaled) {
+  if (img) { HIST.push(img.src); if (HIST.length > 12) HIST.shift(); REDO.length = 0; }
+  if (!ORIG) { ORIG = src; ORIGIMG = new Image(); ORIGIMG.src = src; }
+  rawSet(src, scaled);
 };
-$("undo").onclick = () => { const s = HIST.pop(); if (s) rawSet(s); };
+$("undo").onclick = () => {
+  const s = HIST.pop();
+  if (s) { REDO.push(img.src); rawSet(s, true); }
+};
+$("redo").onclick = () => {
+  const s = REDO.pop();
+  if (s) { HIST.push(img.src); rawSet(s, true); }
+};
 
 // ---------- filters + adjust ----------
 const SL = ["brightness", "contrast", "saturate", "sepia", "hue", "blur"];
@@ -28,6 +37,12 @@ const PRE = {
   Noir: [88, 140, 0, 0, 0, 0], Warm: [102, 105, 115, 28, 0, 0], Cool: [100, 105, 108, 0, -15, 0],
   Fade: [108, 88, 85, 0, 0, 0], Drama: [92, 132, 110, 0, 0, 0], Vintage: [104, 92, 80, 40, -8, 0],
   Cinema: [96, 122, 92, 12, 12, 0],
+  // ---- royal filters ----
+  Versailles: [106, 108, 118, 22, -6, 0],
+  "Midnight Crown": [86, 130, 92, 0, 18, 0],
+  "Desert Gold": [104, 110, 122, 45, -4, 0],
+  "Royal Velvet": [93, 122, 125, 0, -28, 0],
+  Sapphire: [98, 115, 112, 0, 28, 0],
 };
 const P = $("presets");
 P.innerHTML = Object.keys(PRE).map((n) => `<button class="pre" data-n="${n}"><canvas width="56" height="56"></canvas>${n}</button>`).join("");
@@ -39,6 +54,7 @@ window.onImage = () => {
     x.filter = fs(PRE[b.dataset.n], 0);
     x.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 56, 56);
   });
+  if (splitOn) drawSplit();
 };
 P.onclick = (e) => {
   const b = e.target.closest(".pre");
@@ -101,6 +117,60 @@ $("auto").onclick = () => mod((c, x) => {
   x.putImageData(a, 0, 0);
 });
 
+// ---------- Royal Touch ----------
+$("royal").onclick = () => mod((c, x) => {
+  const W = c.width, H = c.height;
+  const a = x.getImageData(0, 0, W, H), d = a.data, h = new Uint32Array(256);
+  for (let i = 0; i < d.length; i += 4) h[(d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11) | 0]++;
+  const tot = d.length / 4;
+  let lo = 0, hi = 255, s = 0;
+  while (lo < 255 && (s += h[lo]) < tot * 0.01) lo++;
+  s = 0;
+  while (hi > 0 && (s += h[hi]) < tot * 0.01) hi--;
+  lo = Math.min(lo, 40);
+  hi = Math.max(hi, 180);
+  const k = Math.min(1.6, 255 / Math.max(1, hi - lo));
+  for (let i = 0; i < d.length; i += 4) {
+    let r = (d[i] - lo) * k, g = (d[i + 1] - lo) * k, b = (d[i + 2] - lo) * k;
+    const l = r * 0.3 + g * 0.59 + b * 0.11;
+    // richer color
+    r = l + (r - l) * 1.18; g = l + (g - l) * 1.18; b = l + (b - l) * 1.18;
+    // golden glow, stronger in the highlights
+    const t = clamp(l) / 255;
+    r += 12 * t; g += 6 * t; b -= 9 * t;
+    d[i] = clamp(r); d[i + 1] = clamp(g); d[i + 2] = clamp(b);
+  }
+  x.putImageData(a, 0, 0);
+  // soft vignette
+  const g = x.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.hypot(W, H) / 2);
+  g.addColorStop(0, "rgba(0,0,0,0)");
+  g.addColorStop(1, "rgba(20,10,0,.35)");
+  x.fillStyle = g;
+  x.fillRect(0, 0, W, H);
+});
+
+// ---------- before / after slider ----------
+let splitOn = false;
+function drawSplit() {
+  if (!ORIGIMG || !ORIGIMG.complete) return;
+  redraw();
+  const p = +$("split").value / 100, X = canvas.width * p;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, X, canvas.height);
+  ctx.clip();
+  ctx.drawImage(ORIGIMG, 0, 0, canvas.width, canvas.height);
+  ctx.restore();
+  ctx.fillStyle = "#e8c96d";
+  ctx.fillRect(X - 2, 0, 4, canvas.height);
+}
+$("split-toggle").onclick = () => {
+  splitOn = !splitOn;
+  $("split").classList.toggle("hidden", !splitOn);
+  if (splitOn) drawSplit(); else redraw();
+};
+$("split").oninput = drawSplit;
+
 // ---------- crop / resize ----------
 document.querySelectorAll("[data-r]").forEach((b) => (b.onclick = () => {
   const [a, d] = b.dataset.r.split(":").map(Number), r = a / d;
@@ -150,7 +220,7 @@ cmp.onpointerdown = () => {
   o.onload = () => { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(o, 0, 0, canvas.width, canvas.height); };
   o.src = ORIG;
 };
-cmp.onpointerup = cmp.onpointerleave = () => redraw();
+cmp.onpointerup = cmp.onpointerleave = () => (splitOn ? drawSplit() : redraw());
 
 $("download").onclick = () => {
   const f = $("fmt").value;
@@ -184,5 +254,7 @@ $("save").onclick = () => {
 };
 
 addEventListener("keydown", (e) => {
-  if (e.ctrlKey && e.key.toLowerCase() === "z") { e.preventDefault(); $("undo").click(); }
+  const k = e.key.toLowerCase();
+  if (e.ctrlKey && k === "z" && !e.shiftKey) { e.preventDefault(); $("undo").click(); }
+  else if (e.ctrlKey && (k === "y" || (k === "z" && e.shiftKey))) { e.preventDefault(); $("redo").click(); }
 });
