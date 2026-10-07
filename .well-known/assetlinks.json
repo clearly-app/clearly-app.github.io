@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.clearlyapp.clearly",
+        "sha256_cert_fingerprints": ["0A:20:C3:E7:5A:B5:49:48:D3:40:19:9B:AC:FA:ED:3D:FD:F0:7A:3E:9C:85:18:DC:C9:76:72:90:B1:47:74:A4"]
+      }
+    }]
