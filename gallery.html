@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Gallery – Clearly</title>
-  <link rel="manifest" href="manifest.json">
+
   <link rel="stylesheet" href="style.css">
   <style>
     .thumb{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;margin-bottom:12px;background:#000}
@@ -44,7 +44,7 @@
     if (i !== undefined) { W.splice(i, 1); localStorage.setItem(WK, JSON.stringify(W)); location.reload(); }
   };
 
-  const S = [["Beach cleanup","Removal",20],["Sunset boost","Enhance",0],["Warm tones","Color",340],["Crowd-free street","Removal",200],["Crisp detail","Enhance",260],["Moody fade","Color",120]];
+  const S = [["Golden hour","Color",20],["Sunset boost","Filters",0],["Warm tones","Color",340],["Cool cinema","Filters",200],["Crisp detail","Effects",260],["Moody fade","Effects",120]];
   const show = document.getElementById("show");
   show.innerHTML = S.map((s, i) => `<div class="glass card" data-c="${s[1]}" style="--d:${i * 0.06}s"><div class="thumb">
     <svg class="b" style="filter:hue-rotate(${s[2]}deg) blur(3px) grayscale(.7) brightness(.7)"><use href="#scene" width="100%" height="100%"/></svg>
@@ -52,7 +52,7 @@
     <span class="tag live">${s[1]}</span><h3>${s[0]}</h3><p>Hover to reveal the result.</p></div>`).join("");
 
   const chips = document.getElementById("chips");
-  chips.innerHTML = ["All", "Removal", "Enhance", "Color"].map((c, i) => `<button class="btn mini chip ${i ? "" : "on"}" data-f="${c}">${c}</button>`).join("");
+  chips.innerHTML = ["All", "Filters", "Color", "Effects"].map((c, i) => `<button class="btn mini chip ${i ? "" : "on"}" data-f="${c}">${c}</button>`).join("");
   chips.onclick = (e) => {
     const f = e.target.dataset.f;
     if (!f) return;
